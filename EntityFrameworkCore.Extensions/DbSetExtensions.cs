@@ -5,7 +5,7 @@ namespace DerMagereStudent.EntityFrameworkCore.Extensions;
 public static class DbSetExtensions {
 	/// <summary>
 	/// <para>
-	///		Wrapper around the method <see cref="DbContext.FindAsync{TEntity}(object[])"/>. Gets the array of primary key values
+	///		Wrapper around the method <see cref="DbSet{TEntity}.FindAsync(object[])"/>. Gets the array of primary key values
 	///		from the object instance using the entity type definitions from the DB context.
 	/// </para>
 	/// <para>
