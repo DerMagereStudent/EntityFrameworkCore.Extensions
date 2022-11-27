@@ -18,7 +18,9 @@ public static class DbSetExtensions {
 	/// <param name="entity">The entity to get the primary key value/values from.</param>
 	/// <typeparam name="TEntity">The type of the entity.</typeparam>
 	/// <returns></returns>
-	public static async ValueTask<TEntity?> FindTrackedAsync<TEntity>(this DbSet<TEntity> dbSet, TEntity entity) where TEntity : class {
+	public static async ValueTask<TEntity?> FindTrackedAsync<TEntity>(this DbSet<TEntity> dbSet, TEntity entity, CancellationToken cancellationToken = default) where TEntity : class {
+		cancellationToken.ThrowIfCancellationRequested();
+
 		// Get the collection pf properties (columns) that define the primary or composite primary key
 		var keyProperties = dbSet.EntityType?.FindPrimaryKey()?.Properties;
 		
@@ -30,6 +32,6 @@ public static class DbSetExtensions {
 		var keyValues = keyProperties.Select(prop => prop.GetGetter().GetClrValue(entity)).ToArray();
 		
 		// Look for an existing tracked entity or execute a DB query to look for an entry with the given primary key values
-		return await dbSet.FindAsync(keyValues);
+		return await dbSet.FindAsync(keyValues, cancellationToken);
 	}
 }

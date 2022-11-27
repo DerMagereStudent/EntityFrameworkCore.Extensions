@@ -18,7 +18,9 @@ public static class DbContextExtensions {
 	/// <param name="entity">The entity to get the primary key value/values from.</param>
 	/// <typeparam name="TEntity">The type of the entity.</typeparam>
 	/// <returns></returns>
-	public static async ValueTask<TEntity?> FindTrackedAsync<TEntity>(this DbContext context, TEntity entity) where TEntity : class {
+	public static async ValueTask<TEntity?> FindTrackedAsync<TEntity>(this DbContext context, TEntity entity, CancellationToken cancellationToken = default) where TEntity : class {
+		cancellationToken.ThrowIfCancellationRequested();
+		
 		// Get the EF Core model type definition for TEntity, which contains all the model information including keys, unique constraints, ...
 		var entityType = context.Model.FindRuntimeEntityType(typeof(TEntity));
 		
@@ -33,6 +35,6 @@ public static class DbContextExtensions {
 		var keyValues = keyProperties.Select(prop => prop.GetGetter().GetClrValue(entity)).ToArray();
 		
 		// Look for an existing tracked entity or execute a DB query to look for an entry with the given primary key values
-		return await context.FindAsync<TEntity>(keyValues);
+		return await context.FindAsync<TEntity>(keyValues, cancellationToken);
 	}
 }
